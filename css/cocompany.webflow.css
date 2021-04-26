@@ -123,7 +123,7 @@ body {
 h1 {
   margin-top: 20px;
   margin-bottom: 10px;
-  font-family: futura-pt, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 38px;
   line-height: 44px;
   font-weight: 600;
@@ -179,6 +179,13 @@ a.w--current {
   color: #ff4e00;
 }
 
+ul {
+  margin-top: 0px;
+  margin-bottom: 10px;
+  padding-left: 40px;
+  line-height: 24px;
+}
+
 .navbar {
   margin-bottom: 20px;
   padding-top: 20px;
@@ -232,7 +239,7 @@ a.w--current {
 .section-hero {
   margin-bottom: -100px;
   padding-top: 0px;
-  padding-bottom: 150px;
+  padding-bottom: 180px;
   background-image: url('../images/bg-top.svg');
   background-position: 50% 100%;
   background-size: cover;
@@ -241,10 +248,10 @@ a.w--current {
 
 .subtitle {
   margin-top: 20px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   font-family: 'IBM Plex Sans', sans-serif;
   font-size: 18px;
-  line-height: 24px;
+  line-height: 28px;
 }
 
 .subtitle.subtitle-blog {
@@ -274,6 +281,10 @@ a.w--current {
   color: #fff;
 }
 
+.button.w--current {
+  color: #fff;
+}
+
 .button.button-menu {
   margin-top: 20px;
   margin-left: 20px;
@@ -281,6 +292,12 @@ a.w--current {
 
 .button.button-menu.w--current {
   color: #fff;
+}
+
+.button.button-xl {
+  padding: 15px 35px;
+  border-radius: 50px;
+  font-size: 24px;
 }
 
 .heading {
@@ -318,7 +335,7 @@ a.w--current {
 }
 
 .title {
-  font-family: futura-pt, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   color: #009192;
   font-size: 38px;
   line-height: 42px;
@@ -354,7 +371,7 @@ a.w--current {
 
 .section-plans {
   padding-top: 20px;
-  padding-bottom: 100px;
+  padding-bottom: 40px;
 }
 
 .plan {
@@ -390,16 +407,21 @@ a.w--current {
 }
 
 .plan_section.plan_section-large {
-  min-height: 203px;
+  min-height: 223px;
   padding-bottom: 10px;
 }
 
 .plan_section.plan_section-medium {
-  min-height: 135px;
+  min-height: 140px;
 }
 
 .plan_section.plan_section-small {
   min-height: 110px;
+}
+
+.plan_section.plan_section-small.plan_section-last {
+  padding-bottom: 20px;
+  text-align: left;
 }
 
 .plan_type {
@@ -437,13 +459,13 @@ a.w--current {
 .plan_price {
   margin-top: 0px;
   margin-bottom: 5px;
-  font-family: futura-pt, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 24px;
   font-weight: 600;
 }
 
 .plan_unit {
-  font-family: Inter, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 14px;
   font-weight: 400;
 }
@@ -523,8 +545,8 @@ a.w--current {
 }
 
 .section-home {
-  padding-top: 100px;
-  padding-bottom: 160px;
+  padding-top: 70px;
+  padding-bottom: 140px;
   background-image: url('../images/bg-top.svg');
   background-position: 50% 100%;
   background-size: cover;
@@ -754,7 +776,7 @@ a.w--current {
 }
 
 .paragraph-large {
-  font-family: futura-pt, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 21px;
   line-height: 28px;
 }
@@ -995,7 +1017,7 @@ a.w--current {
 
 .section-plancompare {
   margin-top: 60px;
-  padding-top: 20px;
+  padding-top: 50px;
   padding-bottom: 0px;
 }
 
@@ -1241,7 +1263,7 @@ a.w--current {
 }
 
 .pricelarge {
-  font-family: futura-pt, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   color: #009192;
   font-size: 80px;
   line-height: 100px;
@@ -1432,7 +1454,7 @@ a.w--current {
 
 .story_subtitle {
   margin-bottom: 40px;
-  font-family: futura-pt, sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
   font-size: 24px;
 }
 
@@ -2196,6 +2218,87 @@ a.w--current {
   font-family: 'IBM Plex Sans', sans-serif;
 }
 
+.list-2 {
+  line-height: 24px;
+}
+
+.section-signup {
+  margin-top: 100px;
+  margin-bottom: -40px;
+}
+
+.signup {
+  min-height: 700px;
+}
+
+.column-ralign {
+  text-align: right;
+}
+
+.section-contacthero {
+  margin-bottom: 0px;
+  padding-top: 0px;
+  padding-bottom: 150px;
+  background-image: url('../images/bg-top.svg');
+  background-position: 50% 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.mb-80 {
+  margin-bottom: 80px;
+}
+
+.html-embed {
+  margin-left: -35px;
+  padding-left: 0px;
+}
+
+.benefit_item {
+  margin-bottom: 10px;
+  padding: 0px 0px 10px 30px;
+  background-image: url('../images/check-orange.svg');
+  background-position: 0px 0px;
+  background-size: 24px 23px;
+  background-repeat: no-repeat;
+  font-size: 18px;
+  background-clip: border-box;
+}
+
+.benefits {
+  margin-top: 20px;
+  padding: 10px 15px 10px 0px;
+  border-bottom: 1px none rgba(0, 0, 0, 0.1);
+}
+
+.benefits.plan_section-last {
+  min-height: 120px;
+  border-bottom-style: none;
+}
+
+.benefits.plan_section-200 {
+  min-height: 200px;
+  padding-bottom: 10px;
+}
+
+.benefits.plan_section-160 {
+  min-height: 160px;
+}
+
+.benefits.mb-40 {
+  margin-bottom: 20px;
+}
+
+.section-pricinghero {
+  margin-bottom: -150px;
+  padding-top: 0px;
+  padding-bottom: 120px;
+  background-image: url('../images/bg-top.svg');
+  background-position: 50% 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
 @media screen and (max-width: 991px) {
   .plan_section.plan_section-large {
     min-height: 362px;
@@ -2706,6 +2809,14 @@ a.w--current {
     -webkit-flex-direction: column-reverse;
     -ms-flex-direction: column-reverse;
     flex-direction: column-reverse;
+  }
+
+  .section-contacthero {
+    padding-bottom: 20px;
+  }
+
+  .section-pricinghero {
+    padding-bottom: 20px;
   }
 }
 
