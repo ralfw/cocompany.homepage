@@ -420,6 +420,7 @@ ul {
 }
 
 .plan_section.plan_section-small.plan_section-last {
+  min-height: 125px;
   padding-bottom: 20px;
   text-align: left;
 }
