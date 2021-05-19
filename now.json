@@ -1,0 +1,16 @@
+{
+  "redirects": [
+  	{ 
+  	  "source": "/bulgaria", 
+  	  "destination": "/bulgaria/start.html" 
+  	},
+    { 
+      "source": "/bg", 
+      "destination": "/bulgaria/start.html" 
+    },
+	  { 
+  	  "source": "/blog", 
+  	  "destination": "/blog.html" 
+  	}
+  ]
+}
