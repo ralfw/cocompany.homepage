@@ -1,10 +1,12 @@
 //TODO: Wechselkurse dynamisch laden (einmalig)
+//TODO: Freelancer mit 25% Abzug berücksichtigen
 
 let EXCHANGE_RATIOS = [0.51125, 1.0, 0.43901, 0.61071] // In der Reihenfolge der Currencies, https://themoneyconverter.com/BGN/EUR
 let SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
 let SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
 let TAX_PCT = 0.1000;
 let MAX_SOCIAL_SEC_INCOME_BGN = 3000.00;
+let FREELANCER_DEDUCTION_PCT = 0.25;
 
 function onInteraction(view:View) {
     let model = view.Model;
@@ -16,21 +18,50 @@ function onInteraction(view:View) {
     let grossIncome:number;
 
     if (model.IncomeType == IncomeTypes.Revenue) {
-        let monthlyGrossIncome = (model.Income / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
+        // ???
+        let duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
+                                                    : model.Income;
+
+        let monthlyGrossIncome = (duesRelevantIncome / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
         let monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
+
         socialSecurityShares = monthlySocialSecurityShares.Multiply(periodFactor);
         grossIncome = model.Income - socialSecurityShares.Employer;
+
+        /*
+zu hohe taxes!
+social sec scheint korrekt berechnet zu werden für revenue reduziert um 25%
+beispiel:
+- employee: 750 -> 54,38 taxes + 206,23 social sec
+- freelancer: 1000 -> 79,38 taxes (???) + 206,23 social sec
+
+        revenue -> prel. gross
+        prel. gross -> gross
+
+         */
     }
     else if (model.IncomeType == IncomeTypes.Payout) {
+        // ???
         let taxableIncome = model.Income / (1-TAX_PCT);
-        let monthlyGrossIncome = (taxableIncome / periodFactor) / (1-SOCIAL_SEC_EMPLOYEE_PCT);
+        let monthlyGrossIncome = (taxableIncome / periodFactor) / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
         let monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
         socialSecurityShares = monthlySocialSecurityShares.Multiply(periodFactor);
         grossIncome = taxableIncome + socialSecurityShares.Employee;
+
+        /*
+        payout -> taxable
+        taxable -> prel. gross
+        prel. gross -> gross
+
+         */
     }
 
     model.TotalSocialSec = socialSecurityShares.Total;
     model.Revenue = grossIncome + socialSecurityShares.Employer;
+
+    // ????
+    if (model.IncomeType == IncomeTypes.Payout && model.IsFreelancer)
+        model.Revenue = model.Revenue - model.Revenue * FREELANCER_DEDUCTION_PCT;
 
     let taxableIncome = grossIncome - socialSecurityShares.Employee;
     model.TotalTaxes = taxableIncome * TAX_PCT;
@@ -92,12 +123,13 @@ enum Currencies {
 
 
 
-class Model {
+export class Model {
     public IncomeType:IncomeTypes = IncomeTypes.Revenue;
     public IncomePeriod:IncomePeriods = IncomePeriods.Month;
     public Income:number;
     public Currency:Currencies = Currencies.EUR;
     public ExchangeRatio:number = EXCHANGE_RATIOS[Currencies.EUR];
+    public IsFreelancer = false;
 
     public Payout:number = 0.0;
     public Revenue:number = 0.0;
@@ -114,11 +146,12 @@ class Model {
 
 let CURRENCY_SYMBOLS = ["€", "лв", "£", "$"]; // Reihenfolge wie bei Currencies
 
-class View {
+export class View {
     sb_incomeType:HTMLSelectElement;
     tx_income:HTMLInputElement;
     sb_currency:HTMLSelectElement;
     lb_exchangeRatio:HTMLElement;
+    cb_isFreelancer:HTMLInputElement;
     sb_incomePeriod:HTMLSelectElement;
 
     lb_payout:HTMLElement;
@@ -154,6 +187,9 @@ class View {
 
         this.lb_exchangeRatio = document.getElementById("exchangeratio");
 
+        this.cb_isFreelancer = document.getElementById("isFreelancer") as HTMLInputElement;
+        this.cb_isFreelancer.onchange = () => this.OnChanged(this);
+
         this.sb_incomePeriod = document.getElementById("incomeperiod") as HTMLSelectElement;
         this.sb_incomePeriod.onchange = () => this.OnChanged(this);
 
@@ -169,6 +205,7 @@ class View {
         model.IncomeType = this.IncomeType;
         model.Currency = this.Currency;
         model.IncomePeriod = this.IncomePeriod;
+        model.IsFreelancer = this.cb_isFreelancer.checked;
 
         let x = parseFloat(this.tx_income.value);
         model.Income = isNaN(x) ? 0.0 : x;
@@ -181,6 +218,7 @@ class View {
         //this.tx_income.value = model.Income.toFixed(2);
         this.Currency = model.Currency;
         this.lb_exchangeRatio.innerText = "(1лв=" + model.ExchangeRatio.toFixed(5) + CURRENCY_SYMBOLS[model.Currency] + ")";
+        this.cb_isFreelancer.checked = model.IsFreelancer;
         this.IncomePeriod = model.IncomePeriod;
 
 
@@ -228,6 +266,7 @@ class View {
         this.sb_incomePeriod.value = this.INCOME_PERIOD_OPTIONS[value];
     }
 
+
     public OnChanged: (view: View) => void;
 }
 
@@ -239,5 +278,3 @@ class View {
 
 let view = new View();
 view.OnChanged = onInteraction;
-
-

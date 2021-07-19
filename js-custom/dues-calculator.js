@@ -1,9 +1,14 @@
+"use strict";
 //TODO: Wechselkurse dynamisch laden (einmalig)
+//TODO: Freelancer mit 25% Abzug berücksichtigen
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.View = exports.Model = void 0;
 var EXCHANGE_RATIOS = [0.51125, 1.0, 0.43901, 0.61071]; // In der Reihenfolge der Currencies, https://themoneyconverter.com/BGN/EUR
 var SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
 var SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
 var TAX_PCT = 0.1000;
 var MAX_SOCIAL_SEC_INCOME_BGN = 3000.00;
+var FREELANCER_DEDUCTION_PCT = 0.25;
 function onInteraction(view) {
     var model = view.Model;
     model.ExchangeRatio = EXCHANGE_RATIOS[model.Currency];
@@ -11,20 +16,39 @@ function onInteraction(view) {
     var socialSecurityShares;
     var grossIncome;
     if (model.IncomeType == IncomeTypes.Revenue) {
-        var monthlyGrossIncome = (model.Income / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
+        var duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
+            : model.Income;
+        var monthlyGrossIncome = (duesRelevantIncome / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
         var monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
         socialSecurityShares = monthlySocialSecurityShares.Multiply(periodFactor);
         grossIncome = model.Income - socialSecurityShares.Employer;
+        /*
+
+        revenue -> prel. gross
+        prel. gross -> gross
+
+         */
     }
     else if (model.IncomeType == IncomeTypes.Payout) {
+        var duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
+            : model.Income;
         var taxableIncome_1 = model.Income / (1 - TAX_PCT);
         var monthlyGrossIncome = (taxableIncome_1 / periodFactor) / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
         var monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
         socialSecurityShares = monthlySocialSecurityShares.Multiply(periodFactor);
         grossIncome = taxableIncome_1 + socialSecurityShares.Employee;
+        /*
+
+        payout -> taxable
+        taxable -> prel. gross
+        prel. gross -> gross
+
+         */
     }
     model.TotalSocialSec = socialSecurityShares.Total;
     model.Revenue = grossIncome + socialSecurityShares.Employer;
+    if (model.IncomeType == IncomeTypes.Payout && model.IsFreelancer)
+        model.Revenue = model.Revenue - model.Revenue * FREELANCER_DEDUCTION_PCT;
     var taxableIncome = grossIncome - socialSecurityShares.Employee;
     model.TotalTaxes = taxableIncome * TAX_PCT;
     model.Payout = taxableIncome - model.TotalTaxes;
@@ -84,6 +108,7 @@ var Model = /** @class */ (function () {
         this.IncomePeriod = IncomePeriods.Month;
         this.Currency = Currencies.EUR;
         this.ExchangeRatio = EXCHANGE_RATIOS[Currencies.EUR];
+        this.IsFreelancer = false;
         this.Payout = 0.0;
         this.Revenue = 0.0;
         this.TotalTaxes = 0.0;
@@ -91,6 +116,7 @@ var Model = /** @class */ (function () {
     }
     return Model;
 }());
+exports.Model = Model;
 /*
 ========== View ==========
  */
@@ -124,6 +150,8 @@ var View = /** @class */ (function () {
         this.sb_currency = document.getElementById("currency");
         this.sb_currency.onchange = function () { return _this.OnChanged(_this); };
         this.lb_exchangeRatio = document.getElementById("exchangeratio");
+        this.cb_isFreelancer = document.getElementById("isFreelancer");
+        this.cb_isFreelancer.onchange = function () { return _this.OnChanged(_this); };
         this.sb_incomePeriod = document.getElementById("incomeperiod");
         this.sb_incomePeriod.onchange = function () { return _this.OnChanged(_this); };
         this.lb_payout = document.getElementById("payout");
@@ -137,6 +165,7 @@ var View = /** @class */ (function () {
             model.IncomeType = this.IncomeType;
             model.Currency = this.Currency;
             model.IncomePeriod = this.IncomePeriod;
+            model.IsFreelancer = this.cb_isFreelancer.checked;
             var x = parseFloat(this.tx_income.value);
             model.Income = isNaN(x) ? 0.0 : x;
             return model;
@@ -149,6 +178,7 @@ var View = /** @class */ (function () {
         //this.tx_income.value = model.Income.toFixed(2);
         this.Currency = model.Currency;
         this.lb_exchangeRatio.innerText = "(1лв=" + model.ExchangeRatio.toFixed(5) + CURRENCY_SYMBOLS[model.Currency] + ")";
+        this.cb_isFreelancer.checked = model.IsFreelancer;
         this.IncomePeriod = model.IncomePeriod;
         this.lb_payout.innerText = model.Payout.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_totalTaxes.innerText = model.TotalTaxes.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
@@ -198,6 +228,7 @@ var View = /** @class */ (function () {
     });
     return View;
 }());
+exports.View = View;
 /*
 ========== Construction/Run ==========
  */

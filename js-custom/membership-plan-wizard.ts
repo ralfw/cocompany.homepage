@@ -118,7 +118,7 @@ enum AverageExpensesOptions {
 }
 
 
-class Model {
+export class Model {
     public EUCitizen:boolean = false;
     public BGResidency:BGResidencyOptions = BGResidencyOptions.WantsToBecomeBGResident;
 
@@ -191,7 +191,7 @@ class ViewPlans {
 }
 
 
-class View {
+export class View {
     rb_EUCitizen_yes:HTMLInputElement;
     rb_EUCitizen_no:HTMLInputElement;
 

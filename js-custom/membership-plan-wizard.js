@@ -1,3 +1,6 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.View = exports.Model = void 0;
 function onInteraction(view) {
     var model = view.ViewModel;
     model.RecommendPlan = RecommendationEngine.Recommend(model);
@@ -109,6 +112,7 @@ var Model = /** @class */ (function () {
     }
     return Model;
 }());
+exports.Model = Model;
 /*
 ================== View ==================
  */
@@ -259,6 +263,7 @@ var View = /** @class */ (function () {
     });
     return View;
 }());
+exports.View = View;
 /*
 ================== Construction ==================
  */

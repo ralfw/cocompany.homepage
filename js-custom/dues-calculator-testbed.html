@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dues Calculator</title>
+</head>
+<body>
+<h1>Dues Calculator</h1>
+
+<div>
+    <div><select id="incomeperiod" name="incomeperiod" data-name="incomeperiod">
+        <option value="month">Monthly</option>
+        <option value="year">Yearly</option>
+    </select></div>
+    <div class="calculator_settingscol"><select id="incometype" name="incometype" data-name="incometype" class="select select-large w-select">
+        <option value="revenue">Gross Payout</option>
+        <option value="payout">Net Payout</option>
+    </select></div>
+    <div class="calculator_settingscol calculator_settingscol-center"><input type="number" maxlength="256" name="income" data-name="income" placeholder="0" id="income" class="calculator_input w-input"></div>
+    <div class="calculator_settingscol">
+        <div class="calculator_exchange"><span id="exchangeratio" class="calculator_exchange">(BGN:?)</span></div><select id="currency" name="currency" data-name="currency" class="select w-select">
+        <option value="EUR">€</option>
+        <option value="BGN">лв</option>
+        <option value="GBP">£</option>
+        <option value="USD">$</option>
+    </select>
+    </div>
+    Calculate as freelancer with 25% automatic deduction: <input type="checkbox" id="isFreelancer">
+</div>
+<div class="calculator_row">
+    <div class="calculator_labelcol">
+        <div>Gross Payout / Revenue</div>
+    </div>
+    <div class="calculator_resultcol">
+        <div><span id="revenue">0.00€</span></div>
+    </div>
+</div>
+<div class="calculator_row">
+    <div class="calculator_labelcol">
+        <div>Taxes</div>
+    </div>
+    <div class="calculator_resultcol">
+        <div><span id="totaltaxes">0.00€</span></div>
+    </div>
+</div>
+<div class="calculator_row">
+    <div class="calculator_labelcol">
+        <div>Social Security</div>
+    </div>
+    <div class="calculator_resultcol">
+        <div><span id="totalsocialsec">0.00€</span></div>
+    </div>
+</div>
+<div class="calculator_row calculator_row-separator">
+    <div class="calculator_labelcol">
+        <div>Net Payout</div>
+    </div>
+    <div class="calculator_resultcol">
+        <div><span id="payout" class="calculator_payout">0.00€</span></div>
+    </div>
+</div>
+
+</body>
+<script> var exports = {}; </script> // hack: https://stackoverflow.com/questions/42497479/uncaught-referenceerror-exports-is-not-defined-in-filed-generated-by-typescript/42510255
+<script src="dues-calculator.js">
+</script>
+</html>
