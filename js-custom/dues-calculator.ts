@@ -18,27 +18,20 @@ function onInteraction(view:View) {
     let grossIncome:number;
 
     if (model.IncomeType == IncomeTypes.Revenue) {
-        // ???
+        model.Revenue = model.Income;
+
         let duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
                                                     : model.Income;
 
         let monthlyGrossIncome = (duesRelevantIncome / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
         let monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
 
-        socialSecurityShares = monthlySocialSecurityShares.Multiply(periodFactor);
-        grossIncome = model.Income - socialSecurityShares.Employer;
+        model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
 
-        /*
-zu hohe taxes!
-social sec scheint korrekt berechnet zu werden für revenue reduziert um 25%
-beispiel:
-- employee: 750 -> 54,38 taxes + 206,23 social sec
-- freelancer: 1000 -> 79,38 taxes (???) + 206,23 social sec
+        let taxableIncome = duesRelevantIncome - model.TotalSocialSec;
+        model.TotalTaxes = taxableIncome * TAX_PCT;
 
-        revenue -> prel. gross
-        prel. gross -> gross
-
-         */
+        model.Payout = model.Revenue - model.TotalTaxes - model.TotalSocialSec;
     }
     else if (model.IncomeType == IncomeTypes.Payout) {
         // ???
@@ -54,18 +47,21 @@ beispiel:
         prel. gross -> gross
 
          */
+
+        model.TotalSocialSec = socialSecurityShares.Total;
+
+        model.Revenue = grossIncome + socialSecurityShares.Employer;
+        // ????
+        if (model.IncomeType == IncomeTypes.Payout && model.IsFreelancer)
+            model.Revenue = model.Revenue - model.Revenue * FREELANCER_DEDUCTION_PCT;
+
+        taxableIncome = grossIncome - socialSecurityShares.Employee;
+
+        model.TotalTaxes = taxableIncome * TAX_PCT;
+
+
+        model.Payout = taxableIncome - model.TotalTaxes;
     }
-
-    model.TotalSocialSec = socialSecurityShares.Total;
-    model.Revenue = grossIncome + socialSecurityShares.Employer;
-
-    // ????
-    if (model.IncomeType == IncomeTypes.Payout && model.IsFreelancer)
-        model.Revenue = model.Revenue - model.Revenue * FREELANCER_DEDUCTION_PCT;
-
-    let taxableIncome = grossIncome - socialSecurityShares.Employee;
-    model.TotalTaxes = taxableIncome * TAX_PCT;
-    model.Payout = taxableIncome - model.TotalTaxes;
 
     view.Update(model);
 }

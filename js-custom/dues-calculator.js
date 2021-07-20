@@ -16,42 +16,38 @@ function onInteraction(view) {
     var socialSecurityShares;
     var grossIncome;
     if (model.IncomeType == IncomeTypes.Revenue) {
+        model.Revenue = model.Income;
         var duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
             : model.Income;
         var monthlyGrossIncome = (duesRelevantIncome / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
         var monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
-        socialSecurityShares = monthlySocialSecurityShares.Multiply(periodFactor);
-        grossIncome = model.Income - socialSecurityShares.Employer;
-        /*
-
-        revenue -> prel. gross
-        prel. gross -> gross
-
-         */
+        model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
+        var taxableIncome = duesRelevantIncome - model.TotalSocialSec;
+        model.TotalTaxes = taxableIncome * TAX_PCT;
+        model.Payout = model.Revenue - model.TotalTaxes - model.TotalSocialSec;
     }
     else if (model.IncomeType == IncomeTypes.Payout) {
-        var duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
-            : model.Income;
-        var taxableIncome_1 = model.Income / (1 - TAX_PCT);
-        var monthlyGrossIncome = (taxableIncome_1 / periodFactor) / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
+        // ???
+        var taxableIncome = model.Income / (1 - TAX_PCT);
+        var monthlyGrossIncome = (taxableIncome / periodFactor) / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
         var monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
         socialSecurityShares = monthlySocialSecurityShares.Multiply(periodFactor);
-        grossIncome = taxableIncome_1 + socialSecurityShares.Employee;
+        grossIncome = taxableIncome + socialSecurityShares.Employee;
         /*
-
         payout -> taxable
         taxable -> prel. gross
         prel. gross -> gross
 
          */
+        model.TotalSocialSec = socialSecurityShares.Total;
+        model.Revenue = grossIncome + socialSecurityShares.Employer;
+        // ????
+        if (model.IncomeType == IncomeTypes.Payout && model.IsFreelancer)
+            model.Revenue = model.Revenue - model.Revenue * FREELANCER_DEDUCTION_PCT;
+        taxableIncome = grossIncome - socialSecurityShares.Employee;
+        model.TotalTaxes = taxableIncome * TAX_PCT;
+        model.Payout = taxableIncome - model.TotalTaxes;
     }
-    model.TotalSocialSec = socialSecurityShares.Total;
-    model.Revenue = grossIncome + socialSecurityShares.Employer;
-    if (model.IncomeType == IncomeTypes.Payout && model.IsFreelancer)
-        model.Revenue = model.Revenue - model.Revenue * FREELANCER_DEDUCTION_PCT;
-    var taxableIncome = grossIncome - socialSecurityShares.Employee;
-    model.TotalTaxes = taxableIncome * TAX_PCT;
-    model.Payout = taxableIncome - model.TotalTaxes;
     view.Update(model);
 }
 var SocialSecurityShares = /** @class */ (function () {
