@@ -6,8 +6,8 @@ exports.View = exports.Model = void 0;
 var EXCHANGE_RATIOS = [0.51125, 1.0, 0.43901, 0.61071]; // In der Reihenfolge der Currencies, https://themoneyconverter.com/BGN/EUR
 var SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
 var SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
-var TAX_PCT = 0.1000;
 var MAX_SOCIAL_SEC_INCOME_BGN = 3000.00;
+var TAX_PCT = 0.1000;
 var FREELANCER_DEDUCTION_PCT = 0.25;
 function onInteraction(view) {
     var model = view.Model;
@@ -27,26 +27,14 @@ function onInteraction(view) {
         model.Payout = model.Revenue - model.TotalTaxes - model.TotalSocialSec;
     }
     else if (model.IncomeType == IncomeTypes.Payout) {
-        // ???
+        model.IsFreelancer = false; // no freelancer calculation allowed if net payout is given!
+        model.Payout = model.Income;
         var taxableIncome = model.Income / (1 - TAX_PCT);
         var monthlyGrossIncome = (taxableIncome / periodFactor) / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
         var monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
-        socialSecurityShares = monthlySocialSecurityShares.Multiply(periodFactor);
-        grossIncome = taxableIncome + socialSecurityShares.Employee;
-        /*
-        payout -> taxable
-        taxable -> prel. gross
-        prel. gross -> gross
-
-         */
-        model.TotalSocialSec = socialSecurityShares.Total;
-        model.Revenue = grossIncome + socialSecurityShares.Employer;
-        // ????
-        if (model.IncomeType == IncomeTypes.Payout && model.IsFreelancer)
-            model.Revenue = model.Revenue - model.Revenue * FREELANCER_DEDUCTION_PCT;
-        taxableIncome = grossIncome - socialSecurityShares.Employee;
+        model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
         model.TotalTaxes = taxableIncome * TAX_PCT;
-        model.Payout = taxableIncome - model.TotalTaxes;
+        model.Revenue = model.Payout + model.TotalTaxes + model.TotalSocialSec;
     }
     view.Update(model);
 }
