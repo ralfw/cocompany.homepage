@@ -2,6 +2,7 @@
 //TODO: Freelancer mit 25% Abzug berücksichtigen
 
 let EXCHANGE_RATIOS = [0.51125, 1.0, 0.43901, 0.61071] // In der Reihenfolge der Currencies, https://themoneyconverter.com/BGN/EUR
+
 let SOCIAL_SEC_EMPLOYEE_PCT = 0.1378;
 let SOCIAL_SEC_EMPLOYER_PCT = 0.1892;
 let MAX_SOCIAL_SEC_INCOME_BGN = 3000.00;
@@ -20,37 +21,22 @@ function onInteraction(view:View) {
     let socialSecurityShares:SocialSecurityShares;
     let grossIncome:number;
 
-    if (model.IncomeType == IncomeTypes.Revenue) {
-        model.Revenue = model.Income;
 
-        let duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
-                                                    : model.Income;
+    model.Revenue = model.Income;
 
-        let monthlyGrossIncome = (duesRelevantIncome / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
-        let monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
+    let duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
+                                                : model.Income;
 
-        model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
+    let monthlyGrossIncome = (duesRelevantIncome / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
+    let monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
 
-        let taxableIncome = duesRelevantIncome - model.TotalSocialSec;
-        model.TotalTaxes = taxableIncome * TAX_PCT;
+    model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
 
-        model.Payout = model.Revenue - model.TotalTaxes - model.TotalSocialSec;
-    }
-    else if (model.IncomeType == IncomeTypes.Payout) {
-        model.IsFreelancer = false; // no freelancer calculation allowed if net payout is given!
+    let taxableIncome = duesRelevantIncome - model.TotalSocialSec;
+    model.TotalTaxes = taxableIncome * TAX_PCT;
 
-        model.Payout = model.Income;
+    model.Payout = model.Revenue - model.TotalTaxes - model.TotalSocialSec;
 
-        let taxableIncome = model.Income / (1-TAX_PCT);
-
-        let monthlyGrossIncome = (taxableIncome / periodFactor) / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
-        let monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
-        model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
-
-        model.TotalTaxes = taxableIncome * TAX_PCT;
-
-        model.Revenue = model.Payout + model.TotalTaxes + model.TotalSocialSec;
-    }
 
     view.Update(model);
 }
@@ -87,13 +73,6 @@ function CalculateSocialSecurity(grossIncome:number, exchangeRatio:number):Socia
 /*
 ========== Model ==========
  */
-
-
-enum IncomeTypes {
-    Payout,
-    Revenue
-}
-
 enum IncomePeriods {
     Month,
     Year
@@ -106,10 +85,7 @@ enum Currencies {
     USD
 }
 
-
-
 export class Model {
-    public IncomeType:IncomeTypes = IncomeTypes.Revenue;
     public IncomePeriod:IncomePeriods = IncomePeriods.Month;
     public Income:number;
     public Currency:Currencies = Currencies.EUR;
@@ -132,7 +108,6 @@ export class Model {
 let CURRENCY_SYMBOLS = ["€", "лв", "£", "$"]; // Reihenfolge wie bei Currencies
 
 export class View {
-    sb_incomeType:HTMLSelectElement;
     tx_income:HTMLInputElement;
     sb_currency:HTMLSelectElement;
     lb_exchangeRatio:HTMLElement;
@@ -146,9 +121,6 @@ export class View {
 
 
     constructor() {
-        this.sb_incomeType = document.getElementById("incometype") as HTMLSelectElement;
-        this.sb_incomeType.onchange = () => this.OnChanged(this);
-
         this.tx_income = document.getElementById("income") as HTMLInputElement;
         // Bei jedem Tastendruck sofort die Kalkulation aktualisieren.
         // Allerdings muss einen Moment gewartet werden, bis die Veränderung in .value
@@ -187,7 +159,6 @@ export class View {
 
     public get Model(): Model {
         let model = new Model();
-        model.IncomeType = this.IncomeType;
         model.Currency = this.Currency;
         model.IncomePeriod = this.IncomePeriod;
         model.IsFreelancer = this.cb_isFreelancer.checked;
@@ -199,7 +170,6 @@ export class View {
     }
 
     public Update(model: Model) {
-        this.IncomeType = model.IncomeType;
         //this.tx_income.value = model.Income.toFixed(2);
         this.Currency = model.Currency;
         this.lb_exchangeRatio.innerText = "(1лв=" + model.ExchangeRatio.toFixed(5) + CURRENCY_SYMBOLS[model.Currency] + ")";
@@ -215,17 +185,6 @@ export class View {
     }
 
 
-    INCOME_TYPE_OPTIONS = ["payout","revenue"]
-    get IncomeType(): IncomeTypes {
-        switch(this.sb_incomeType.value){
-            case this.INCOME_TYPE_OPTIONS[IncomeTypes.Payout]: return IncomeTypes.Payout;
-            case this.INCOME_TYPE_OPTIONS[IncomeTypes.Revenue]: return IncomeTypes.Revenue;
-        }
-    }
-    set IncomeType(value:IncomeTypes) {
-        this.sb_incomeType.value = this.INCOME_TYPE_OPTIONS[value];
-    }
-
     CURRENCY_OPTION = ["EUR","BGN","GBP", "USD"]
     get Currency(): Currencies {
         switch(this.sb_currency.value){
@@ -239,6 +198,7 @@ export class View {
     set Currency(value:Currencies) {
         this.sb_currency.value = this.CURRENCY_OPTION[value];
     }
+
 
     INCOME_PERIOD_OPTIONS = ["month","year"]
     get IncomePeriod(): IncomePeriods {

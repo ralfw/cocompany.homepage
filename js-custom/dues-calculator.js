@@ -15,27 +15,15 @@ function onInteraction(view) {
     var periodFactor = model.IncomePeriod == IncomePeriods.Month ? 1.0 : 12.0;
     var socialSecurityShares;
     var grossIncome;
-    if (model.IncomeType == IncomeTypes.Revenue) {
-        model.Revenue = model.Income;
-        var duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
-            : model.Income;
-        var monthlyGrossIncome = (duesRelevantIncome / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
-        var monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
-        model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
-        var taxableIncome = duesRelevantIncome - model.TotalSocialSec;
-        model.TotalTaxes = taxableIncome * TAX_PCT;
-        model.Payout = model.Revenue - model.TotalTaxes - model.TotalSocialSec;
-    }
-    else if (model.IncomeType == IncomeTypes.Payout) {
-        model.IsFreelancer = false; // no freelancer calculation allowed if net payout is given!
-        model.Payout = model.Income;
-        var taxableIncome = model.Income / (1 - TAX_PCT);
-        var monthlyGrossIncome = (taxableIncome / periodFactor) / (1 - SOCIAL_SEC_EMPLOYEE_PCT);
-        var monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
-        model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
-        model.TotalTaxes = taxableIncome * TAX_PCT;
-        model.Revenue = model.Payout + model.TotalTaxes + model.TotalSocialSec;
-    }
+    model.Revenue = model.Income;
+    var duesRelevantIncome = model.IsFreelancer ? model.Income - model.Income * FREELANCER_DEDUCTION_PCT
+        : model.Income;
+    var monthlyGrossIncome = (duesRelevantIncome / periodFactor) / (1 + SOCIAL_SEC_EMPLOYER_PCT);
+    var monthlySocialSecurityShares = CalculateSocialSecurity(monthlyGrossIncome, model.ExchangeRatio);
+    model.TotalSocialSec = monthlySocialSecurityShares.Multiply(periodFactor).Total;
+    var taxableIncome = duesRelevantIncome - model.TotalSocialSec;
+    model.TotalTaxes = taxableIncome * TAX_PCT;
+    model.Payout = model.Revenue - model.TotalTaxes - model.TotalSocialSec;
     view.Update(model);
 }
 var SocialSecurityShares = /** @class */ (function () {
@@ -69,11 +57,6 @@ function CalculateSocialSecurity(grossIncome, exchangeRatio) {
 /*
 ========== Model ==========
  */
-var IncomeTypes;
-(function (IncomeTypes) {
-    IncomeTypes[IncomeTypes["Payout"] = 0] = "Payout";
-    IncomeTypes[IncomeTypes["Revenue"] = 1] = "Revenue";
-})(IncomeTypes || (IncomeTypes = {}));
 var IncomePeriods;
 (function (IncomePeriods) {
     IncomePeriods[IncomePeriods["Month"] = 0] = "Month";
@@ -88,7 +71,6 @@ var Currencies;
 })(Currencies || (Currencies = {}));
 var Model = /** @class */ (function () {
     function Model() {
-        this.IncomeType = IncomeTypes.Revenue;
         this.IncomePeriod = IncomePeriods.Month;
         this.Currency = Currencies.EUR;
         this.ExchangeRatio = EXCHANGE_RATIOS[Currencies.EUR];
@@ -108,11 +90,8 @@ var CURRENCY_SYMBOLS = ["€", "лв", "£", "$"]; // Reihenfolge wie bei Curren
 var View = /** @class */ (function () {
     function View() {
         var _this = this;
-        this.INCOME_TYPE_OPTIONS = ["payout", "revenue"];
         this.CURRENCY_OPTION = ["EUR", "BGN", "GBP", "USD"];
         this.INCOME_PERIOD_OPTIONS = ["month", "year"];
-        this.sb_incomeType = document.getElementById("incometype");
-        this.sb_incomeType.onchange = function () { return _this.OnChanged(_this); };
         this.tx_income = document.getElementById("income");
         // Bei jedem Tastendruck sofort die Kalkulation aktualisieren.
         // Allerdings muss einen Moment gewartet werden, bis die Veränderung in .value
@@ -146,7 +125,6 @@ var View = /** @class */ (function () {
     Object.defineProperty(View.prototype, "Model", {
         get: function () {
             var model = new Model();
-            model.IncomeType = this.IncomeType;
             model.Currency = this.Currency;
             model.IncomePeriod = this.IncomePeriod;
             model.IsFreelancer = this.cb_isFreelancer.checked;
@@ -158,7 +136,6 @@ var View = /** @class */ (function () {
         configurable: true
     });
     View.prototype.Update = function (model) {
-        this.IncomeType = model.IncomeType;
         //this.tx_income.value = model.Income.toFixed(2);
         this.Currency = model.Currency;
         this.lb_exchangeRatio.innerText = "(1лв=" + model.ExchangeRatio.toFixed(5) + CURRENCY_SYMBOLS[model.Currency] + ")";
@@ -169,19 +146,6 @@ var View = /** @class */ (function () {
         this.lb_totalSocialSec.innerText = model.TotalSocialSec.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
         this.lb_revenue.innerText = model.Revenue.toFixed(2) + CURRENCY_SYMBOLS[model.Currency];
     };
-    Object.defineProperty(View.prototype, "IncomeType", {
-        get: function () {
-            switch (this.sb_incomeType.value) {
-                case this.INCOME_TYPE_OPTIONS[IncomeTypes.Payout]: return IncomeTypes.Payout;
-                case this.INCOME_TYPE_OPTIONS[IncomeTypes.Revenue]: return IncomeTypes.Revenue;
-            }
-        },
-        set: function (value) {
-            this.sb_incomeType.value = this.INCOME_TYPE_OPTIONS[value];
-        },
-        enumerable: false,
-        configurable: true
-    });
     Object.defineProperty(View.prototype, "Currency", {
         get: function () {
             switch (this.sb_currency.value) {
