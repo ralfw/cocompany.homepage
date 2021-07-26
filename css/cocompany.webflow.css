@@ -2308,6 +2308,10 @@ ul {
   padding-left: 10px;
 }
 
+.paragraph-mediuim {
+  font-size: 18px;
+}
+
 @media screen and (max-width: 991px) {
   .plan_section.plan_section-large {
     min-height: 362px;
