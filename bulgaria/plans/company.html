@@ -1,5 +1,5 @@
 <!DOCTYPE html><!--  This site was created in Webflow. http://www.webflow.com  -->
-<!--  Last Published: Mon Jul 26 2021 15:13:16 GMT+0000 (Coordinated Universal Time)  -->
+<!--  Last Published: Thu Jul 29 2021 16:45:32 GMT+0000 (Coordinated Universal Time)  -->
 <html data-wf-page="607d28fab7adce2a2414e830" data-wf-site="607d28fab7adce44a114e829">
 <head>
   <meta charset="utf-8">
@@ -208,6 +208,87 @@
       </div>
     </div>
   </div>
+  <div class="section-dues wf-section">
+    <div class="w-container">
+      <div class="w-row">
+        <div class="w-col w-col-6">
+          <h2 class="title-orange">Dues Calculator</h2>
+        </div>
+        <div class="w-col w-col-6"></div>
+      </div>
+    </div>
+    <div class="w-container">
+      <div class="w-row">
+        <div class="w-col w-col-6 w-col-medium-6">
+          <p>With a company you have to pay yourself a salary and therefore have to pay taxes and social security contributions every month. To help you calculate what that means in terms of &quot;money in your pocket&quot;, you can run your numbers through the calculator here. Enter the monthly gross payout you expect and we&#x27;ll tell you what net salary/payout you can expect from that.</p>
+        </div>
+        <div class="w-col w-col-6 w-col-medium-6">
+          <div class="calculator">
+            <div class="w-form">
+              <form id="email-form" name="email-form" data-name="Email Form">
+                <div class="calculator_settings">
+                  <div class="calculator_settingscol"><select id="incomeperiod" name="incomeperiod" data-name="incomeperiod" class="select select-large w-select">
+                      <option value="month">Monthly Revenue</option>
+                      <option value="year">Yearly Revenue</option>
+                    </select></div>
+                  <div class="calculator_settingscol calculator_settingscol-center"><input type="number" maxlength="256" name="income" data-name="income" placeholder="0" id="income" class="calculator_input w-input"></div>
+                  <div class="calculator_settingscol">
+                    <div class="calculator_exchange"><span id="exchangeratio" class="calculator_exchange">(BGN:?)</span></div><select id="currency" name="currency" data-name="currency" class="select w-select">
+                      <option value="EUR">€</option>
+                      <option value="BGN">лв</option>
+                      <option value="GBP">£</option>
+                      <option value="USD">$</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="calculator_row"><label class="w-checkbox calculator_checkbox">
+                    <div class="w-checkbox-input w-checkbox-input--inputType-custom checkbox"></div><input type="checkbox" id="isFreelancer" name="checkbox" data-name="Checkbox" style="opacity:0;position:absolute;z-index:-1"><span class="checkbox_label w-form-label">Calculate as freelancer with 25% automatic deduction</span>
+                  </label></div>
+                <div class="calculator_row">
+                  <div class="calculator_labelcol">
+                    <div>Gross Payout</div>
+                  </div>
+                  <div class="calculator_resultcol">
+                    <div><span id="revenue">0.00€</span></div>
+                  </div>
+                </div>
+                <div class="calculator_row">
+                  <div class="calculator_labelcol">
+                    <div>Taxes</div>
+                  </div>
+                  <div class="calculator_resultcol">
+                    <div><span id="totaltaxes">0.00€</span></div>
+                  </div>
+                </div>
+                <div class="calculator_row">
+                  <div class="calculator_labelcol">
+                    <div>Social Security</div>
+                  </div>
+                  <div class="calculator_resultcol">
+                    <div><span id="totalsocialsec">0.00€</span></div>
+                  </div>
+                </div>
+                <div class="calculator_row calculator_row-separator">
+                  <div class="calculator_labelcol">
+                    <div>Net Payout</div>
+                  </div>
+                  <div class="calculator_resultcol">
+                    <div><span id="payout" class="calculator_payout">0.00€</span></div>
+                  </div>
+                </div>
+              </form>
+              <div class="w-form-done">
+                <div>Thank you! Your submission has been received!</div>
+              </div>
+              <div class="w-form-fail">
+                <div>Oops! Something went wrong while submitting the form.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="section-story wf-section">
     <div class="w-container">
       <div class="w-row">
@@ -290,5 +371,7 @@
   <!-- [if lte IE 9]><script src="https://cdnjs.cloudflare.com/ajax/libs/placeholders/3.0.2/placeholders.min.js"></script><![endif] -->
   <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="8c96a27a-7904-4462-8de3-e62b137026ac";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
   <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="8c96a27a-7904-4462-8de3-e62b137026ac";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
+  <script> var exports = {}; </script>
+  <script type="text/javascript" src="../../js-custom/dues-calculator.js"></script>
 </body>
 </html>
