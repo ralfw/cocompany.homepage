@@ -1425,7 +1425,7 @@ ul {
 
 .residentimage {
   margin-top: 70px;
-  margin-bottom: -70px;
+  margin-bottom: -150px;
   text-align: center;
 }
 
@@ -2304,12 +2304,23 @@ ul {
   padding-left: 37px;
 }
 
+.calculator_checkbox.calculator_checkbox-hidden {
+  display: none;
+}
+
 .checkbox_label {
   padding-left: 10px;
 }
 
 .paragraph-mediuim {
   font-size: 18px;
+}
+
+.usecase_plan {
+  margin-top: 14px;
+  margin-bottom: -12px;
+  color: #009192;
+  font-weight: 600;
 }
 
 @media screen and (max-width: 991px) {
