@@ -370,6 +370,7 @@ ul {
 }
 
 .section-plans {
+  margin-top: 50px;
   padding-top: 20px;
   padding-bottom: 40px;
 }
@@ -798,7 +799,7 @@ ul {
 
 .section-footer {
   min-height: 500px;
-  padding-top: 220px;
+  padding-top: 300px;
   padding-bottom: 50px;
   background-image: url('../images/bg-bottom.svg');
   background-position: 0px 0px;
