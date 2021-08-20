@@ -445,6 +445,7 @@ ul {
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-clip: border-box;
+  -webkit-text-fill-color: inherit;
 }
 
 .procon_con {
@@ -456,6 +457,7 @@ ul {
   background-size: 20px 20px;
   background-repeat: no-repeat;
   background-clip: border-box;
+  -webkit-text-fill-color: inherit;
 }
 
 .plan_price {
@@ -2033,6 +2035,7 @@ ul {
   background-size: auto;
   background-repeat: no-repeat;
   background-clip: border-box;
+  -webkit-text-fill-color: inherit;
 }
 
 .button-outline {
@@ -2063,7 +2066,7 @@ ul {
 }
 
 .plan_category {
-  margin-bottom: 20px;
+  margin-bottom: 40px;
   margin-left: 0px;
   padding-top: 0px;
   padding-left: 0px;
@@ -2265,6 +2268,7 @@ ul {
   background-repeat: no-repeat;
   font-size: 18px;
   background-clip: border-box;
+  -webkit-text-fill-color: inherit;
 }
 
 .benefits {
@@ -2321,6 +2325,25 @@ ul {
   margin-top: 14px;
   margin-bottom: -12px;
   color: #009192;
+  font-weight: 600;
+}
+
+.recommended {
+  -o-object-fit: fill;
+  object-fit: fill;
+}
+
+.rectag {
+  position: absolute;
+  left: auto;
+  top: 0%;
+  right: 0%;
+  bottom: auto;
+  margin-top: -13px;
+  padding: 5px 10px;
+  background-color: #009192;
+  color: #fff;
+  font-size: 12px;
   font-weight: 600;
 }
 
